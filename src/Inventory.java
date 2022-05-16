@@ -24,12 +24,15 @@ public class Inventory {
     public void addDaysPassed() { daysPassed++; }
     public void setActionCount(int amt) { actionCount = amt; }
 
+    public void addFood(Food food) { foods.add(food); }
+    public void removeFood(int index) { foods.remove(index); }
+
     public String toString() {
         String i = "Day: " + (daysPassed - 1);
         String ii = "Money: $" + money;
         String iii = "Appeal: " + appeal;
         String iv = "Energy: ";
-        for (int i = 0; i != energy; i++) {
+        for (int k = 0; k != energy; k++) {
             System.out.println();
         }
         return i;
