@@ -9,6 +9,16 @@ public class Inventory {
     private int daysPassed;
     private int actionCount;
 
+    public Inventory() {
+        foods = new ArrayList<Food>();
+        money = 0.0;
+        appeal = 3;
+        energy = 5;
+        catEnergy = 5;
+        daysPassed = 0;
+        actionCount = 3;
+    }
+
     public ArrayList<Food> getFoods() { return foods; }
     public double getMoney() { return money; }
     public int getAppeal() { return appeal; }
@@ -17,6 +27,7 @@ public class Inventory {
     public int getDaysPassed() { return daysPassed; }
     public int getActionCount() { return actionCount; }
 
+    public void setFoods(ArrayList<Food> foodList) { foods = foodList; }
     public void setMoney(double amt) { money = amt; }
     public void setAppeal(int amt) { appeal = amt; }
     public void setEnergy(int amt) { energy = amt; }

@@ -1,5 +1,9 @@
+import java.io.FileWriter;
+import java.io.File;
+import java.io.IOException;
 import java.util.Scanner;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Activity extends Inventory{
     private final Food[] foodShop;
@@ -78,6 +82,11 @@ public class Activity extends Inventory{
         transition();
     }
 
+    public void shower() {
+        System.out.println("You go to the local park and start showering in the vacant bathroom...");
+        int appealGain = (int) (Math.random() * 3);
+    }
+
     public void feed() {
         System.out.println("Inventory: # - name - energy refuel");
         for (int i = 0; i != getFoods().size(); i++) {
@@ -149,6 +158,7 @@ public class Activity extends Inventory{
             System.out.println((i + 1) + " - " + food.getName() + " - " + food.getPrice());
         }
         System.out.println("Which do you want to sell? You have $" + getMoney() + "\nChoice #: ");
+        Scanner s = new Scanner(System.in);
         int choice = s.nextInt();
         while (choice > getFoods().size() || choice < 0) {
             System.out.println("Please choose a valid option or 0 to exit.\nChoice #: ");
@@ -162,5 +172,27 @@ public class Activity extends Inventory{
 
         }
         transition();
+    }
+
+    public void save() {
+        try {
+            File f = new File("src/inventory.data");
+            f.createNewFile();
+            FileWriter fileWriter = new FileWriter("src/inventory.data");
+            for (Food food: getFoods()) {
+                fileWriter.write(food.getName() + "; " + food.getPrice() + food.getEnergy() + "\n");
+            }
+            fileWriter.write("\n" + getMoney() + "; ");
+            fileWriter.write(getAppeal() + "; ");
+            fileWriter.write(getEnergy() + "; ");
+            fileWriter.write(getCatEnergy() + "; ");
+            fileWriter.write(getDaysPassed() + "; ");
+            fileWriter.write(getActionCount());
+            fileWriter.close();
+        }
+        catch (IOException e) {
+            System.out.println("Unable to create file");
+            e.printStackTrace();
+        }
     }
 }
