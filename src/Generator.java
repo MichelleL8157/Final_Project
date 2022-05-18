@@ -1,5 +1,6 @@
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.Locale;
 import java.util.Scanner;
 import java.util.ArrayList;
 
@@ -25,14 +26,20 @@ public class Generator {
             info.setActionCount(s.nextInt());
             s.close();
             Activity act = new Activity();
-            if (info.getActionCount() < 0) {
-                act.nextDay();
-            } else {
-                act.action();
-            }
+            GUIController gui = new GUIController(info);
         }
         catch (FileNotFoundException e) {
-            
+            Inventory info = new Inventory();
+            System.out.println("Welcome!\nYou're playing as a homeless man who needs to manage his resources carefully to survive each day.\nAre you ready?");
+            Scanner s = new Scanner(System.in);
+            String ans = s.nextLine();
+            ans = ans.toLowerCase();
+            if (ans.equals("yes") || ans.equals("y")) {
+                info.save();
+                GUIController gui = new GUIController(info);
+            } else {
+                System.out.println("Come back next time!");
+            }
         }
     }
 }

@@ -1,3 +1,6 @@
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class Inventory {
@@ -49,5 +52,25 @@ public class Inventory {
         return i;
     }
 
-
+    public void save() {
+        try {
+            File f = new File("src/inventory.data");
+            f.createNewFile();
+            FileWriter fileWriter = new FileWriter("src/inventory.data");
+            for (Food food: getFoods()) {
+                fileWriter.write(food.getName() + "; " + food.getPrice() + food.getEnergy() + "\n");
+            }
+            fileWriter.write("\n" + getMoney() + "; ");
+            fileWriter.write(getAppeal() + "; ");
+            fileWriter.write(getEnergy() + "; ");
+            fileWriter.write(getCatEnergy() + "; ");
+            fileWriter.write(getDaysPassed() + "; ");
+            fileWriter.write(getActionCount());
+            fileWriter.close();
+        }
+        catch (IOException e) {
+            System.out.println("Unable to create file");
+            e.printStackTrace();
+        }
+    }
 }
