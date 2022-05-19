@@ -9,28 +9,28 @@ public class Generator {
         try {
             File f = new File("src/inventory.data");
             Scanner s = new Scanner(f);
+            Inventory info = new Inventory();
+            String data = s.nextLine();
+            String[] dataArr = data.split(";\\s*");
+            info.setMoney(Double.parseDouble(dataArr[0]));
+            info.setAppeal(Integer.parseInt(dataArr[1]));
+            info.setEnergy(Integer.parseInt(dataArr[2]));
+            info.setCatEnergy(Integer.parseInt(dataArr[3]));
+            info.setActionCount(Integer.parseInt(dataArr[4]));
             ArrayList<Food> foods = new ArrayList<Food>();
-            while (!s.nextLine().equals("")) {
+            while (s.hasNextLine()) {
                 String values = s.nextLine();
                 String[] valuesArr = values.split(";\\s*");
                 Food food = new Food(valuesArr[0], Double.parseDouble(valuesArr[1]), Integer.parseInt(valuesArr[2]));
                 foods.add(food);
             }
-            s.nextLine();
-            Inventory info = new Inventory();
             info.setFoods(foods);
-            info.setMoney(s.nextDouble());
-            info.setAppeal(s.nextInt());
-            info.setEnergy(s.nextInt());
-            info.setCatEnergy(s.nextInt());
-            info.setActionCount(s.nextInt());
             s.close();
-            Activity act = new Activity();
             GUIController gui = new GUIController(info);
         }
         catch (FileNotFoundException e) {
             Inventory info = new Inventory();
-            System.out.println("Welcome!\nYou're playing as a homeless man who needs to manage his resources carefully to survive each day.\nAre you ready?");
+            System.out.print("Welcome!\nYou're playing as a homeless man who needs to manage his resources carefully to survive each day.\nAre you ready? ");
             Scanner s = new Scanner(System.in);
             String ans = s.nextLine();
             ans = ans.toLowerCase();

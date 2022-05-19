@@ -17,12 +17,13 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 
-public class GUIController implements ActionListener {
+public class GUIController extends Activity implements ActionListener { //has activity
     private JTextArea infoScreen;
     private Inventory info;
     private Generator client;
 
     public GUIController(Inventory info) {
+        super(info);
         infoScreen = new JTextArea(20, 30);
         this.info = info;
         setupGUI();
@@ -78,11 +79,27 @@ public class GUIController implements ActionListener {
         status += "Energy: $" + info.getEnergy() + "\n";
         status += "Cat Energy: $" + info.getCatEnergy() + "\n";
         status += "Actions Left: $" + info.getActionCount();
+        status += "\n\nWhat do you want to do?";
         infoScreen.setText(status);
+    }
+
+    public void beg() {
+        String text = "You wait for a few hours...";
+        int earningsWhole = (int) (Math.random() * 100) + 1;
+        double earnings = earningsWhole / 100.0;
+        info.setMoney(info.getMoney() + earnings);
+        System.out.println("You gained: $" + earnings + ".\nCurrent Savings: $" + info.getMoney());
+        transition();
     }
 
     public void actionPerformed(ActionEvent e) {
         JButton button = (JButton) (e.getSource());
         String text = button.getText();
+        Activity act = new Activity(info);
+        if (text.equals("Beg")) {
+            act.feed();
+        } else if (text.equals("Scavenge")) {
+
+        }
     }
 }

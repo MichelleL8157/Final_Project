@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class Inventory {
+    private final Food[] FOOD_SHOP;
+    private final Food[] TRASH_PILE;
     private ArrayList<Food> foods;
     private double money;
     private int appeal;
@@ -13,6 +15,14 @@ public class Inventory {
     private int actionCount;
 
     public Inventory() {
+        Food[] foodShop = {new Food("Water", 0.35, 2), new Food("Bread", 0.4, 3), new Food("Bread Crust", 0.15, 1),
+                new Food("Soda", 0.45, 3), new Food("Candy", 0.5, 3), new Food("Potato", 0.2, 1),
+                new Food("Apple", 0.7, 5), new Food("Chocolate", 0.6, 4),
+                new Food("Chips", 0.25, 1), new Food("Cigarettes", 1, 7)};
+        Food[] trashPile = {new Food("Yogurt", 0.1, 1), new Food("Chicken Bones", 0.15, 1),new Food("Old Apple", 0.4, 2),
+                new Food("Half-Bottled Water", 0.15, 1), new Food("Stale Chips", 0.2, 1)};
+        FOOD_SHOP = foodShop;
+        TRASH_PILE = trashPile;
         foods = new ArrayList<Food>();
         money = 0.0;
         appeal = 3;
@@ -57,15 +67,15 @@ public class Inventory {
             File f = new File("src/inventory.data");
             f.createNewFile();
             FileWriter fileWriter = new FileWriter("src/inventory.data");
-            for (Food food: getFoods()) {
-                fileWriter.write(food.getName() + "; " + food.getPrice() + food.getEnergy() + "\n");
-            }
-            fileWriter.write("\n" + getMoney() + "; ");
+            fileWriter.write(getMoney() + "; ");
             fileWriter.write(getAppeal() + "; ");
             fileWriter.write(getEnergy() + "; ");
             fileWriter.write(getCatEnergy() + "; ");
             fileWriter.write(getDaysPassed() + "; ");
-            fileWriter.write(getActionCount());
+            fileWriter.write(getActionCount() + "");
+            for (Food food: getFoods()) {
+                fileWriter.write("\n" + food.getName() + "; " + food.getPrice() + food.getEnergy());
+            }
             fileWriter.close();
         }
         catch (IOException e) {
