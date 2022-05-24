@@ -1,36 +1,32 @@
-import javax.imageio.ImageIO;
 import javax.swing.JFrame;
-import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 import javax.swing.JTextArea;
 import javax.swing.JButton;
 import java.awt.BorderLayout;
-import java.awt.Image;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Scanner;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 
-public class GUIController implements ActionListener { //has activity
+public class GUIActivities implements ActionListener { //has activity
     private JTextArea infoScreen;
     private Inventory info;
     private JFrame frame;
     private JPanel entry;
     private JPanel entry2;
 
-    public GUIController(Inventory info) {
+    public GUIActivities(Inventory info) {
         infoScreen = new JTextArea(20, 30);
+        entry2 = null;
         this.info = info;
         setupGUI();
         loadInfoScreen();
-        entry2 = null;
     }
 
     public void setupGUI() {
@@ -81,6 +77,10 @@ public class GUIController implements ActionListener { //has activity
     }
 
     private void loadInfoScreen() {
+        entry.setVisible(true);
+        if (entry2 != null) {
+            entry2.setVisible(false);
+        }
         String status = "Days Passed: " + info.getDaysPassed() + "\n";
         status += "Money: $" + info.getMoney() + "\n";
         status += "Appeal: " + info.getAppeal() + "\n";
@@ -132,12 +132,20 @@ public class GUIController implements ActionListener { //has activity
     }
 
     public void beg() {
-        String text = "You wait for a few hours...";
+        entry.setVisible(false);
         int earningsWhole = (int) (Math.random() * 100) + 1;
-        double earnings = earningsWhole / 100.0;
+        DecimalFormat dF = new DecimalFormat("#.##0");
+        String earningsString = 
+        double earnings = new Double(df.format(earningsWhole / 100.0));
         info.setMoney(info.getMoney() + earnings);
-        System.out.println("You gained: $" + earnings + ".\nCurrent Savings: $" + info.getMoney());
-        transition();
+        infoScreen.setText("You wait for a few hours...\nYou earned $" + earnings + "!");
+        JPanel entry2 = new JPanel();
+        this.entry2 = entry2;
+        JButton continueButton = new JButton("Continue");
+        entry2.add(continueButton);
+        continueButton.addActionListener(this);
+        frame.add(entry2, BorderLayout.SOUTH);
+        entry2.setVisible(true);
     }
 
     public void actionPerformed(ActionEvent e) {
@@ -147,6 +155,10 @@ public class GUIController implements ActionListener { //has activity
             beg();
         } else if (text.equals("Scavenge")) {
             scavenge();
+        } else if (text.equals("Save")) {
+            save();
+        } else if (text.equals("Continue")) {
+            transition();
         } else if (text.equals("Yes")) {
             info.save();
             entry2.setVisible(false);

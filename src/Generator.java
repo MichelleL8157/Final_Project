@@ -1,14 +1,16 @@
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.Writer;
 
 public class Generator {
     public void createName(String inputName, String inputPass) {
         try {
-            FileOutputStream fos = new FileOutputStream("src/names.data");
-            String input = inputName + "; " + inputPass;
-            fos.write(input.getBytes());
-            fos.close();
+            Writer addName = new BufferedWriter(new FileWriter("src/names.data", true));
+            addName.append("\n").append(inputName).append("; ").append(inputPass);
+            addName.close();
             generateProg(inputName);
         } catch (IOException e) {
             e.printStackTrace();
@@ -42,15 +44,17 @@ public class Generator {
             s.close();
         } catch (FileNotFoundException e) {
             System.out.println("No names.data file.");
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
 
-    public void generateProg(String userName) {
+    public void generateProg(String userName) throws IOException {
         try {
             File f = new File("src/" + userName + ".data");
             Scanner s = new Scanner(f);
-            Inventory info = new Inventory();
+            Inventory info = new Inventory(userName);
             String data = s.nextLine();
             String[] dataArr = data.split(";\\s*");
             info.setMoney(Double.parseDouble(dataArr[0]));
@@ -67,10 +71,24 @@ public class Generator {
             }
             info.setFoods(foods);
             s.close();
-            GUIController gui = new GUIController(info);
+            GUIActivities gui = new GUIActivities(info);
         }
         catch (FileNotFoundException e) {
-            System.out.println("Generate progress error");
+            File f = new File("src/" + userName + ".data");
+            f.createNewFile();
+            FileWriter fileWriter = new FileWriter("src/" + userName + ".data");
+            Inventory info = new Inventory(userName);
+            fileWriter.write(info.getMoney() + "; ");
+            fileWriter.write(info.getAppeal() + "; ");
+            fileWriter.write(info.getEnergy() + "; ");
+            fileWriter.write(info.getCatEnergy() + "; ");
+            fileWriter.write(info.getDaysPassed() + "; ");
+            fileWriter.write(info.getActionCount() + "");
+            for (Food food: info.getFoods()) {
+                fileWriter.write("\n" + food.getName() + "; " + food.getPrice() + food.getEnergy());
+            }
+            fileWriter.close();
+            info.save();
         }
     }
 }

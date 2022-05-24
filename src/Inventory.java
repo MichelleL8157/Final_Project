@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class Inventory {
+    private String userName;
     private final Food[] FOOD_SHOP;
     private final Food[] TRASH_PILE;
     private ArrayList<Food> foods;
@@ -14,7 +15,7 @@ public class Inventory {
     private int daysPassed;
     private int actionCount;
 
-    public Inventory() {
+    public Inventory(String userName) {
         Food[] foodShop = {new Food("Water", 0.35, 2), new Food("Bread", 0.4, 3), new Food("Bread Crust", 0.15, 1),
                 new Food("Soda", 0.45, 3), new Food("Candy", 0.5, 3), new Food("Potato", 0.2, 1),
                 new Food("Apple", 0.7, 5), new Food("Chocolate", 0.6, 4),
@@ -23,6 +24,7 @@ public class Inventory {
                 new Food("Half-Bottled Water", 0.15, 1), new Food("Stale Chips", 0.2, 1)};
         FOOD_SHOP = foodShop;
         TRASH_PILE = trashPile;
+        this.userName = userName;
         foods = new ArrayList<Food>();
         money = 0.0;
         appeal = 3;
@@ -33,6 +35,7 @@ public class Inventory {
     }
 
     public ArrayList<Food> getFoods() { return foods; }
+    public String getUserName() { return userName; }
     public double getMoney() { return money; }
     public int getAppeal() { return appeal; }
     public int getEnergy() { return energy; }
@@ -64,9 +67,9 @@ public class Inventory {
 
     public void save() {
         try {
-            File f = new File("src/inventory.data");
+            File f = new File("src/" + userName + ".data");
             f.createNewFile();
-            FileWriter fileWriter = new FileWriter("src/inventory.data");
+            FileWriter fileWriter = new FileWriter("src/" + userName + ".data");
             fileWriter.write(getMoney() + "; ");
             fileWriter.write(getAppeal() + "; ");
             fileWriter.write(getEnergy() + "; ");
