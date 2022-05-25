@@ -1,11 +1,5 @@
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextArea;
-import javax.swing.JButton;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Font;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -15,16 +9,20 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 
 public class GUIActivities implements ActionListener { //has activity
-    private JTextArea infoScreen;
-    private Inventory info;
+    private final JTextArea INFO_SCREEN;
+    private final Inventory INFO;
     private JFrame frame;
     private JPanel entry;
     private JPanel entry2;
+    private JPanel continueButton;
+    private JPanel foodBuy;
+    private JPanel foodUse;
+    private JTextField choiceField;
 
     public GUIActivities(Inventory info) {
-        infoScreen = new JTextArea(20, 30);
-        entry2 = null;
-        this.info = info;
+        INFO_SCREEN = new JTextArea(20, 30);
+        choiceField = new JTextField();
+        this.INFO = info;
         setupGUI();
         loadInfoScreen();
     }
@@ -40,11 +38,11 @@ public class GUIActivities implements ActionListener { //has activity
         logoWelcome.add(welcome);
 
         JPanel inventoryPanel = new JPanel();
-        infoScreen.setText("inventory loading...");
-        infoScreen.setFont(new Font("Courier", Font.PLAIN, 15));
-        infoScreen.setWrapStyleWord(true);
-        infoScreen.setLineWrap(true);
-        inventoryPanel.add(infoScreen);
+        INFO_SCREEN.setText("inventory loading...");
+        INFO_SCREEN.setFont(new Font("Courier", Font.PLAIN, 15));
+        INFO_SCREEN.setWrapStyleWord(true);
+        INFO_SCREEN.setLineWrap(true);
+        inventoryPanel.add(INFO_SCREEN);
 
         JPanel entry = new JPanel();
         JButton begButton = new JButton("Beg");
@@ -52,7 +50,7 @@ public class GUIActivities implements ActionListener { //has activity
         JButton showerButton = new JButton("Shower");
         JButton buyButton = new JButton("Buy");
         JButton sellButton = new JButton("Sell");
-        JButton saveButton = new JButton("Save");
+        JButton saveButton = new JButton("Eat");
         entry.add(begButton);
         entry.add(scavengeButton);
         entry.add(showerButton);
@@ -60,6 +58,51 @@ public class GUIActivities implements ActionListener { //has activity
         entry.add(sellButton);
         entry.add(saveButton);
         this.entry = entry;
+
+        JPanel entry2 = new JPanel();
+        JButton yesButton = new JButton("Yes");
+        JButton noButton = new JButton("No");
+        entry2.add(yesButton);
+        entry2.add(noButton);
+        yesButton.addActionListener(this);
+        noButton.addActionListener(this);
+        frame.add(entry2, BorderLayout.SOUTH);
+        entry2.setVisible(false);
+        this.entry2 = entry2;
+
+        JPanel continueButton = new JPanel();
+        JButton continueButtonPhysical = new JButton("Continue");
+        continueButton.add(continueButtonPhysical);
+        continueButtonPhysical.addActionListener(this);
+        frame.add(continueButton, BorderLayout.SOUTH);
+        continueButton.setVisible(false);
+        this.continueButton = continueButton;
+
+        JLabel choiceBox = new JLabel("Choice #: ");
+        JPanel foodBuy = new JPanel();
+        JTextField choiceField = new JTextField(3);
+        this.choiceField = choiceField;
+        JButton purchaseButton = new JButton("Purchase");
+        JButton stopButton = new JButton("Stop");
+        foodBuy.add(choiceBox);
+        foodBuy.add(choiceField);
+        foodBuy.add(purchaseButton);
+        foodBuy.add(stopButton);
+        purchaseButton.addActionListener(this);
+        frame.add(foodBuy, BorderLayout.SOUTH);
+        foodBuy.setVisible(false);
+        this.foodBuy = foodBuy;
+
+        JPanel foodUse = new JPanel();
+        JButton consumeButton = new JButton("Consume");
+        foodUse.add(choiceBox);
+        foodUse.add(choiceField);
+        foodUse.add(consumeButton);
+        foodUse.add(stopButton);
+        consumeButton.addActionListener(this);
+        frame.add(foodUse, BorderLayout.SOUTH);
+        foodUse.setVisible(false);
+        this.foodUse = foodUse;
 
         frame.add(logoWelcome, BorderLayout.NORTH);
         frame.add(inventoryPanel,BorderLayout.CENTER);
@@ -78,94 +121,136 @@ public class GUIActivities implements ActionListener { //has activity
 
     private void loadInfoScreen() {
         entry.setVisible(true);
-        if (entry2 != null) {
-            entry2.setVisible(false);
-        }
-        String status = "Days Passed: " + info.getDaysPassed() + "\n";
-        status += "Money: $" + info.getMoney() + "\n";
-        status += "Appeal: " + info.getAppeal() + "\n";
-        status += "Energy: " + info.getEnergy() + "\n";
-        status += "Cat Energy: " + info.getCatEnergy() + "\n";
-        status += "Actions Left: " + info.getActionCount();
+        String status = "Days Passed: " + INFO.getDaysPassed() + "\n";
+        status += "Money: $" + INFO.getMoney() + "\n";
+        status += "Appeal: " + INFO.getAppeal() + "\n";
+        status += "Energy: " + INFO.getEnergy() + "\n";
+        status += "Cat Energy: " + INFO.getCatEnergy() + "\n";
+        status += "Actions Left: " + INFO.getActionCount();
         status += "\n\nWhat do you want to do? Choose an action.";
-        infoScreen.setText(status);
+        INFO_SCREEN.setText(status);
     }
 
     public void save() {
         entry.setVisible(false);
         String ending = "";
-        if ((info.getActionCount() == 0 && info.getEnergy() < 0)) {
-            ending += "Congrats on surviving for " + info.getDaysPassed() + " days!\n";
+        if ((INFO.getActionCount() == 0 && INFO.getEnergy() < 0)) {
+            ending += "It's the end of the day, but you don't have any energy left...\nCongrats on surviving for " + INFO.getDaysPassed() + " days!\n";
         }
         ending += "Do you want to save your data?";
-        infoScreen.setText(ending);
-        JPanel entry2 = new JPanel();
-        this.entry2 = entry2;
-        JButton yesButton = new JButton("Yes");
-        JButton noButton = new JButton("No");
-        entry2.add(yesButton);
-        entry2.add(noButton);
-        yesButton.addActionListener(this);
-        noButton.addActionListener(this);
-        frame.add(entry2, BorderLayout.SOUTH);
+        INFO_SCREEN.setText(ending);
         entry2.setVisible(true);
     }
 
     public void transition() {
-        infoScreen.setText("");
-        if (info.getActionCount() == 0 && info.getEnergy() < 1) {
+        INFO_SCREEN.setText("");
+        if (INFO.getActionCount() == 0 && INFO.getEnergy() < 1) {
             save();
-        } else if (info.getActionCount() < 1 && info.getEnergy() > 0) {
-            info.addDaysPassed();
-            info.setActionCount(3);
-            info.setEnergy(info.getEnergy() - 2);
+        } else if (INFO.getActionCount() < 1 && INFO.getEnergy() > 0) {
+            INFO.addDaysPassed();
+            INFO.setActionCount(3);
+            INFO.changeEnergy(-2);
             loadInfoScreen();
         } else {
             loadInfoScreen();
         }
     }
 
+    public void beg() {
+        INFO.decreaseActionCount();
+        INFO.changeEnergy(-2);
+        entry.setVisible(false);
+        int earningsWhole = (int) (Math.random() * 100) + 1;
+        DecimalFormat dF = new DecimalFormat("#.##");
+        dF.setRoundingMode(RoundingMode.DOWN);
+        String earningsString = dF.format(earningsWhole / 100.0);
+        double earnings = Double.parseDouble(earningsString);
+        INFO.changeMoney(earnings);
+        INFO_SCREEN.setText("You wait for a few hours...\nYou earned $" + earningsString + "!");
+        continueButton.setVisible(true);
+    }
+
     public void scavenge() {
-        info.setEnergy(0);
-        info.setActionCount(0);
+        INFO.setEnergy(0);
+        INFO.setActionCount(0);
         transition();
     }
 
-    public void beg() {
+    public void shower() {
+        INFO.decreaseActionCount();
+        INFO.changeEnergy(-3);
         entry.setVisible(false);
-        int earningsWhole = (int) (Math.random() * 100) + 1;
-        DecimalFormat dF = new DecimalFormat("#.##0");
-        String earningsString = 
-        double earnings = new Double(df.format(earningsWhole / 100.0));
-        info.setMoney(info.getMoney() + earnings);
-        infoScreen.setText("You wait for a few hours...\nYou earned $" + earnings + "!");
-        JPanel entry2 = new JPanel();
-        this.entry2 = entry2;
-        JButton continueButton = new JButton("Continue");
-        entry2.add(continueButton);
-        continueButton.addActionListener(this);
-        frame.add(entry2, BorderLayout.SOUTH);
-        entry2.setVisible(true);
+        int appeal = (int) (Math.random() * 3) + 1;
+        INFO.changeAppeal(appeal);
+        INFO_SCREEN.setText("You take a shower in the park's public restroom...\nYou gained " + appeal + " appeal point!");
+        continueButton.setVisible(true);
+    }
+
+    public void buy() {
+        entry.setVisible(false);
+        String screenText = "Shop:\n# - name - energy refuel - price\n";
+        for (int i = 0; i != INFO.getFOOD_SHOP().length; i++) {
+            Food food = INFO.getFOOD_SHOP()[i];
+            screenText += (i + 1) + " - " + food.getName() + " - " + food.getEnergy() + " - $" + food.getPrice() + "\n";
+        }
+        screenText += "\nWhich do you want to buy? You have $" + INFO.getMoney();
+        INFO_SCREEN.setText(screenText);
+        foodUse.setVisible(true);
+    }
+
+    public void continuePurchase() {
+        String foodChoiceString = choiceField.getText();
+        int foodChoice = Integer.parseInt(foodChoiceString);
+        Food food = INFO.getFOOD_SHOP()[foodChoice - 1];
+        String screenText = "";
+        if (INFO.getMoney() < food.getPrice()) {
+            screenText += "Purchase Denied:\nYou are short $" + (food.getPrice() - INFO.getMoney());
+        } else {
+            screenText += "Purchase Successful:\nYou spent $" + food.getPrice();
+            INFO.changeMoney(-food.getPrice());
+        }
+        INFO_SCREEN.setText(screenText + " for a " + food.getName().toLowerCase() + "." );
+        continueButton.setVisible(true);
+    }
+
+    public void eat() {
+        INFO.decreaseActionCount();
+        INFO.changeEnergy(-2);
+        entry.setVisible(false);
     }
 
     public void actionPerformed(ActionEvent e) {
         JButton button = (JButton) (e.getSource());
         String text = button.getText();
-        if (text.equals("Beg")) {
-            beg();
-        } else if (text.equals("Scavenge")) {
-            scavenge();
-        } else if (text.equals("Save")) {
-            save();
-        } else if (text.equals("Continue")) {
-            transition();
-        } else if (text.equals("Yes")) {
-            info.save();
-            entry2.setVisible(false);
-            infoScreen.setText("Progress saved;\nCome again!");
-        } else if (text.equals("No")) {
-            entry2.setVisible(false);
-            infoScreen.setText("Progress unsaved.\nCome again!");
+        switch (text) {
+            case "Beg" -> beg();
+            case "Scavenge" -> scavenge();
+            case "Shower" -> shower();
+            case "Buy" -> buy();
+            case "Eat" -> eat();
+            case "Save" -> save();
+            case "Continue" -> {
+                transition();
+                continueButton.setVisible(false);
+            }
+            case "Purchase" -> {
+                continuePurchase();
+                foodBuy.setVisible(false);
+            }
+            case "Stop" -> {
+                transition();
+                foodBuy.setVisible(false);
+                foodUse.setVisible(false);
+            }
+            case "Yes" -> {
+                INFO.save();
+                entry2.setVisible(false);
+                INFO_SCREEN.setText("Progress saved;\nCome again!");
+            }
+            case "No" -> {
+                entry2.setVisible(false);
+                INFO_SCREEN.setText("Progress not saved.\nCome again!");
+            }
         }
     }
 }

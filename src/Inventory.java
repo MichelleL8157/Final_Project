@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class Inventory {
-    private String userName;
+    private final String USER_NAME;
     private final Food[] FOOD_SHOP;
     private final Food[] TRASH_PILE;
     private ArrayList<Food> foods;
@@ -24,7 +24,7 @@ public class Inventory {
                 new Food("Half-Bottled Water", 0.15, 1), new Food("Stale Chips", 0.2, 1)};
         FOOD_SHOP = foodShop;
         TRASH_PILE = trashPile;
-        this.userName = userName;
+        this.USER_NAME = userName;
         foods = new ArrayList<Food>();
         money = 0.0;
         appeal = 3;
@@ -35,7 +35,9 @@ public class Inventory {
     }
 
     public ArrayList<Food> getFoods() { return foods; }
-    public String getUserName() { return userName; }
+    public Food[] getFOOD_SHOP() { return FOOD_SHOP; }
+    public Food[] getTRASH_PILE() { return TRASH_PILE; }
+    public String getUserName() { return USER_NAME; }
     public double getMoney() { return money; }
     public int getAppeal() { return appeal; }
     public int getEnergy() { return energy; }
@@ -44,12 +46,24 @@ public class Inventory {
     public int getActionCount() { return actionCount; }
 
     public void setFoods(ArrayList<Food> foodList) { foods = foodList; }
+
     public void setMoney(double amt) { money = amt; }
+    public void changeMoney(double amt) { money += amt; }
+
     public void setAppeal(int amt) { appeal = amt; }
+    public void changeAppeal(int amt) { appeal += amt; }
+
     public void setEnergy(int amt) { energy = amt; }
+    public void changeEnergy(int amt) { energy += amt; }
+
     public void setCatEnergy(int amt) { catEnergy = amt; }
+    public void changeCatEnergy(int amt) { catEnergy += amt; }
+
+    public void setDaysPassed(int amt) { daysPassed = amt; }
     public void addDaysPassed() { daysPassed++; }
+
     public void setActionCount(int amt) { actionCount = amt; }
+    public void decreaseActionCount() { actionCount--; }
 
     public void addFood(Food food) { foods.add(food); }
     public void removeFood(int index) { foods.remove(index); }
@@ -67,9 +81,9 @@ public class Inventory {
 
     public void save() {
         try {
-            File f = new File("src/" + userName + ".data");
+            File f = new File("src/" + USER_NAME + ".data");
             f.createNewFile();
-            FileWriter fileWriter = new FileWriter("src/" + userName + ".data");
+            FileWriter fileWriter = new FileWriter("src/" + USER_NAME + ".data");
             fileWriter.write(getMoney() + "; ");
             fileWriter.write(getAppeal() + "; ");
             fileWriter.write(getEnergy() + "; ");

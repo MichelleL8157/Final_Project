@@ -61,7 +61,8 @@ public class Generator {
             info.setAppeal(Integer.parseInt(dataArr[1]));
             info.setEnergy(Integer.parseInt(dataArr[2]));
             info.setCatEnergy(Integer.parseInt(dataArr[3]));
-            info.setActionCount(Integer.parseInt(dataArr[4]));
+            info.setDaysPassed(Integer.parseInt(dataArr[4]));
+            info.setActionCount(Integer.parseInt(dataArr[5]));
             ArrayList<Food> foods = new ArrayList<Food>();
             while (s.hasNextLine()) {
                 String values = s.nextLine();
