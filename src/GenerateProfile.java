@@ -5,7 +5,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.Writer;
 
-public class Generator {
+public class GenerateProfile {
     public void createName(String inputName, String inputPass) {
         try {
             Writer addName = new BufferedWriter(new FileWriter("src/names.data", true));
@@ -34,12 +34,13 @@ public class Generator {
                 }
             }
             if (userName.equals("")) {
-                System.out.println("There is no profile with the username: " + inputName);
-            }
-            if (inputPass.equals(userPass)) {
-                generateProg(userName);
+                System.out.println("Username not found!");
             } else {
-                System.out.println("Wrong password!");
+                if (inputPass.equals(userPass)) {
+                    generateProg(userName);
+                } else {
+                    System.out.println("Wrong password!");
+                }
             }
             s.close();
         } catch (FileNotFoundException e) {
@@ -72,7 +73,7 @@ public class Generator {
             }
             info.setFoods(foods);
             s.close();
-            GUIActivities gui = new GUIActivities(info);
+            GUISimulationActivities gui = new GUISimulationActivities(info);
         }
         catch (FileNotFoundException e) {
             File f = new File("src/" + userName + ".data");

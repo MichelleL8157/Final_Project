@@ -1,9 +1,9 @@
 import java.io.IOException;
 import java.util.Scanner;
 
-public class Runner {
+public class GenerateProfileRunner {
     public static void main(String[] args) throws IOException {
-        Generator files = new Generator();
+        GenerateProfile files = new GenerateProfile();
         System.out.print("Welcome to the Homeless Simulation. What do you want to do?\n" +
                 "1. Make new profile\n2. Open saved profile\nChoice #: ");
         Scanner s = new Scanner(System.in);
