@@ -4,8 +4,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 
-public class GUISimulationActivities implements ActionListener { //has activity
+public class GUISimulationActivities implements ActionListener {
     private final JTextArea INFO_SCREEN;
     private final Inventory INFO;
     private JFrame frame;
@@ -20,7 +21,7 @@ public class GUISimulationActivities implements ActionListener { //has activity
     private int napCount;
 
     public GUISimulationActivities(Inventory info) {
-        INFO_SCREEN = new JTextArea(20, 40);
+        INFO_SCREEN = new JTextArea(15, 40);
         choiceField = new JTextField();
         this.INFO = info;
         setupGUI();
@@ -115,7 +116,7 @@ public class GUISimulationActivities implements ActionListener { //has activity
     public void save() {
         actionsPanel.setVisible(false);
         String ending = "";
-        if (napCount == 3) { ending +=  "You napped the whole day and find yourself sleeping, never waking up again."; }
+        if (napCount == 3) { ending +=  "You napped the whole day and find yourself sleeping, never waking up again.\n"; }
             if ((INFO.getActionCount() == 0 && INFO.getEnergy() < 0)) {
             ending += "It's the end of the day, but you don't have any energy left...\nCongrats on surviving for " + INFO.getDaysPassed() + " days!\n";
         }
@@ -136,18 +137,18 @@ public class GUISimulationActivities implements ActionListener { //has activity
     public void transition() {
         continuePanel.setVisible(false);
         INFO_SCREEN.setText("");
-        if (INFO.getActionCount() == 0 && INFO.getEnergy() < 0) {
+        if (INFO.getActionCount() == 0 && INFO.getEnergy() <= 0) { //game over
             save();
-        } else if (INFO.getActionCount() == 0 && INFO.getEnergy() >= 0) {
+        } else if (INFO.getActionCount() == 0 && INFO.getEnergy() > 0) { //to next day
             if (napCount == 3) { save(); }
             else {
+                napCount = 0;
                 INFO.addDaysPassed();
                 INFO.setActionCount(3);
-                INFO.changeEnergy(-1);
                 INFO.changeCatEnergy(-1);
                 if (INFO.getCatEnergy() == 0) {
                     INFO.changeCatEnergy(-1);
-                    String badMews = "It's the end of the day, but your cat doesn't have any energy left...\nBut you must go on.";
+                    String badMews = "It's the end of the day, and your cat doesn't have any energy left...\nBut you must go on.";
                     INFO_SCREEN.setText(badMews);
                     continueOption();
                 } else {
@@ -163,6 +164,7 @@ public class GUISimulationActivities implements ActionListener { //has activity
     public void beg() {
         INFO.decreaseActionCount();
         INFO.changeEnergy(-2);
+        INFO.changeAppeal(-1);
         actionsPanel.setVisible(false);
         int earningsWhole = (int) (Math.random() * 50) + 1;
         for (int i = 3; i < INFO.getAppeal(); i++) {
@@ -178,15 +180,29 @@ public class GUISimulationActivities implements ActionListener { //has activity
         if ((int) (Math.random() * 2) == 0) { activity = "shaking your cup"; }
         else { activity = "holding up a cardboard paper"; }
         INFO_SCREEN.setText("You wait for a few hours " + activity + "...\nYou earned $" + earningsString + "!");
-        INFO.changeAppeal(-1);
         continueOption();
     }
 
     public void scavenge() {
-        INFO.setEnergy(30);
-        INFO.setActionCount(3);
-        INFO.changeAppeal(-3);
-        transition();
+        INFO.decreaseActionCount();
+        INFO.changeEnergy(-3);
+        INFO.changeAppeal(-2);
+        actionsPanel.setVisible(false);
+        int amtFound = (int) (Math.random() * 3) + 1;
+        ArrayList<Food> foodsFound = new ArrayList<Food>();
+        for (int i = 0; i != amtFound; i++) {
+            int foodFoundNum = (int) (Math.random() * 5);
+            Food foodFound = INFO.getTRASH_PILE()[foodFoundNum];
+            foodsFound.add(foodFound);
+            INFO.addFood(foodFound);
+        }
+        String screenText = "You found " + amtFound + " items during your scavenge:\nOrder in: # - name - energy refuel - price\n";
+        for (int i = 0; i != amtFound; i++) {
+            Food food = foodsFound.get(i);
+            screenText += (i + 1) + " - " + food.getName() + " - " + food.getEnergy() + " - $" + food.getPrice() + "\n";
+        }
+        INFO_SCREEN.setText(screenText);
+        continueOption();
     }
 
     public void shower() {
@@ -253,8 +269,8 @@ public class GUISimulationActivities implements ActionListener { //has activity
     public void nap() {
         INFO.decreaseActionCount();
         actionsPanel.setVisible(false);
-        int energyGain = (int) (Math.random() * 3);
-        INFO.changeAppeal(energyGain);
+        int energyGain = (int) (Math.random() * 3) + 1;
+        INFO.changeEnergy(energyGain);
         String screenText = "You take a nap...\nYou gained ";
         if (energyGain == 1) { screenText += "an energy point."; }
         else { screenText += energyGain + " energy points!"; }
@@ -262,6 +278,9 @@ public class GUISimulationActivities implements ActionListener { //has activity
         for (int i = 3; i < INFO.getAppeal(); i++) {
             int bonus = (int) (Math.random() * 10) + 1;
             moneyStolenWhole += bonus;
+        }
+        if (moneyStolenWhole > INFO.getMoney() * 100) {
+            moneyStolenWhole = (int) (INFO.getMoney() * 100);
         }
         DecimalFormat dF = new DecimalFormat("#.##");
         dF.setRoundingMode(RoundingMode.DOWN);
@@ -372,16 +391,15 @@ public class GUISimulationActivities implements ActionListener { //has activity
             case "Use" -> use();
             case "Feed Cat" -> {
                 if (INFO.getCatEnergy() == -1) {
+                    actionsPanel.setVisible(false);
                     INFO_SCREEN.setText("You're too late...");
                     continueOption();
                 } else { feedCat(); }
             }
             case "Feed" -> feed();
             case "Save" -> save();
-            case "Continue" -> {
-                transition();
-            }
-            case "Buy" -> { continuePurchase(); }
+            case "Continue" -> transition();
+            case "Buy" -> continuePurchase();
             case "Stop" -> {
                 foodBuyPanel.setVisible(false);
                 foodUsePanel.setVisible(false);
