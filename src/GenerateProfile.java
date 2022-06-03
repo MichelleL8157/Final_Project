@@ -53,7 +53,7 @@ public class GenerateProfile {
 
     public void generateProg(String userName) throws IOException {
         try {
-            File f = new File("src/" + userName + ".data");
+            File f = new File("src/ProgressSave/" + userName + ".data");
             Scanner s = new Scanner(f);
             Inventory info = new Inventory(userName);
             String data = s.nextLine();
@@ -76,9 +76,9 @@ public class GenerateProfile {
             GUISimulationActivities gui = new GUISimulationActivities(info);
         }
         catch (FileNotFoundException e) {
-            File f = new File("src/" + userName + ".data");
+            File f = new File("src/ProgressSave/" + userName + ".data");
             f.createNewFile();
-            FileWriter fileWriter = new FileWriter("src/" + userName + ".data");
+            FileWriter fileWriter = new FileWriter("src/ProgressSave/" + userName + ".data");
             Inventory info = new Inventory(userName);
             fileWriter.write(info.getMoney() + "; ");
             fileWriter.write(info.getAppeal() + "; ");

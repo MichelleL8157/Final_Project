@@ -16,12 +16,15 @@ public class Inventory {
     private int actionCount;
 
     public Inventory(String userName) {
-        Food[] foodShop = {new Food("Water", 0.35, 2), new Food("Bread", 0.4, 3), new Food("Bread Crust", 0.15, 1),
-                new Food("Soda", 0.45, 3), new Food("Candy", 0.5, 3), new Food("Potato", 0.2, 1),
-                new Food("Apple", 0.7, 5), new Food("Chocolate", 0.6, 4),
-                new Food("Chips", 0.25, 1), new Food("Cigarettes", 1, 7)};
-        Food[] trashPile = {new Food("Yogurt", 0.1, 1), new Food("Chicken Bones", 0.15, 1),new Food("Old Apple", 0.2, 2),
-                new Food("Half-Bottled Water", 0.15, 1), new Food("Stale Chips", 0.2, 1)};
+        Food[] foodShop = {new Food("Water                      ", 0.35, 2),
+                new Food("Bread                      ",0.4, 3), new Food("Bread Crust            ", 0.15, 1),
+                new Food("Soda                       ", 0.45, 3), new Food("Candy                     ", 0.5, 3),
+                new Food("Potato                     ", 0.2, 1), new Food("Apple                      ", 0.7, 5),
+                new Food("Chocolate               ", 0.6, 4), new Food("Chips                      ", 0.25, 1),
+                new Food("Cigarettes             ", 1, 7)};
+        Food[] trashPile = {new Food("Yogurt                     ", 0.1, 1), new Food("Chicken Bones       ", 0.15, 1),
+                new Food("Old Apple                ", 0.2, 2), new Food("Half-Bottled Water  ", 0.15, 1),
+                new Food("Stale Chips             ", 0.2, 1)};
         FOOD_SHOP = foodShop;
         TRASH_PILE = trashPile;
         this.USER_NAME = userName;
@@ -81,9 +84,9 @@ public class Inventory {
 
     public void save() {
         try {
-            File f = new File("src/" + USER_NAME + ".data");
+            File f = new File("src/ProgressSave/" + USER_NAME + ".data");
             f.createNewFile();
-            FileWriter fileWriter = new FileWriter("src/" + USER_NAME + ".data");
+            FileWriter fileWriter = new FileWriter("src/ProgressSave/" + USER_NAME + ".data");
             fileWriter.write(getMoney() + "; ");
             fileWriter.write(getAppeal() + "; ");
             fileWriter.write(getEnergy() + "; ");

@@ -10,6 +10,7 @@ public class GUISimulationActivities implements ActionListener {
     private final JTextArea INFO_SCREEN;
     private final Inventory INFO;
     private JFrame frame;
+    private JLabel defaultPicture;
     private JLabel daysPassed;
     private JPanel actionsPanel;
     private JPanel continuePanel;
@@ -21,7 +22,7 @@ public class GUISimulationActivities implements ActionListener {
     private int napCount;
 
     public GUISimulationActivities(Inventory info) {
-        INFO_SCREEN = new JTextArea(15, 40);
+        INFO_SCREEN = new JTextArea(15, 25);
         choiceField = new JTextField();
         this.INFO = info;
         setupGUI();
@@ -34,18 +35,24 @@ public class GUISimulationActivities implements ActionListener {
         this.frame = frame;
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         JLabel daysPassed = new JLabel("Days Passed: 0");
-        daysPassed.setFont(new Font("Courier", Font.BOLD, 20));
+        daysPassed.setFont(new Font("Tempus Sans", Font.PLAIN, 30));
         daysPassed.setForeground(Color.black);
         JPanel logoWelcome = new JPanel();
         logoWelcome.add(daysPassed);
         this.daysPassed = daysPassed;
 
         JPanel inventoryPanel = new JPanel();
-        INFO_SCREEN.setText("inventory loading...");
-        INFO_SCREEN.setFont(new Font("Courier", Font.PLAIN, 15));
+        INFO_SCREEN.setText("Not working if this shows.");
+        INFO_SCREEN.setFont(new Font("Tempus Sans", Font.PLAIN, 25));
         INFO_SCREEN.setWrapStyleWord(true);
         INFO_SCREEN.setLineWrap(true);
+        ImageIcon image = new ImageIcon("src/Images/test.png");
+        Image imageData = image.getImage();
+        Image scaledImage = imageData.getScaledInstance(500, 500, java.awt.Image.SCALE_SMOOTH);
+        image = new ImageIcon(scaledImage);
+        this.defaultPicture = new JLabel(image);
         inventoryPanel.add(INFO_SCREEN);
+        inventoryPanel.add(defaultPicture);
 
         JPanel actionsPanel = new JPanel();
         JButton begButton = new JButton("Beg");
@@ -100,27 +107,27 @@ public class GUISimulationActivities implements ActionListener {
         DecimalFormat dF = new DecimalFormat("#.##");
         dF.setRoundingMode(RoundingMode.DOWN);
         double money = Double.parseDouble(INFO.getMoney() + "");
-        String status = "Money: $" + money + "\n";
-        status += "Appeal: " + INFO.getAppeal() + "\n";
-        status += "Energy: " + INFO.getEnergy() + "\n";
+        String status = "\n\n\nMoney:         $" + money + "\n";
+        status += "Appeal:          " + INFO.getAppeal() + "\n";
+        status += "Energy:          " + INFO.getEnergy() + "\nCat Energy:   ";
         if (INFO.getCatEnergy() == -1) {
-            status +=  "Cat Energy: X";
+            status +=  "X";
         } else {
-            status += "Cat Energy: " + INFO.getCatEnergy();
+            status += INFO.getCatEnergy();
         }
-        status += "\nActions Left: " + INFO.getActionCount();
-        status += "\n\nWhat do you want to do? Choose an action.";
+        status += "\nActions Left:  " + INFO.getActionCount();
+        status += "\n\nWhat do you want to do?\nChoose an action.";
         INFO_SCREEN.setText(status);
     }
 
     public void save() {
         actionsPanel.setVisible(false);
         String ending = "";
-        if (napCount == 3) { ending +=  "You napped the whole day and find yourself sleeping, never waking up again.\n"; }
+        if (napCount >= 2) { ending +=  "You basically napped the whole day and find yourself sleeping, never waking up again.\n"; }
             if ((INFO.getActionCount() == 0 && INFO.getEnergy() < 0)) {
-            ending += "It's the end of the day, but you don't have any energy left...\nCongrats on surviving for " + INFO.getDaysPassed() + " days!\n";
+            ending += "It's the end of the day, but you don't have any energy left...\n\nCongrats on surviving for " + INFO.getDaysPassed() + " days!\n";
         }
-        ending += "Do you want to save your data?";
+        ending += "\n\n\n\n\n\nDo you want to save your data?";
         INFO_SCREEN.setText(ending);
         JPanel savePanel = new JPanel();
         JButton yesButton = new JButton("Yes");
@@ -140,7 +147,7 @@ public class GUISimulationActivities implements ActionListener {
         if (INFO.getActionCount() == 0 && INFO.getEnergy() <= 0) { //game over
             save();
         } else if (INFO.getActionCount() == 0 && INFO.getEnergy() > 0) { //to next day
-            if (napCount == 3) { save(); }
+            if (napCount >= 2) { save(); }
             else {
                 napCount = 0;
                 INFO.addDaysPassed();
@@ -196,10 +203,11 @@ public class GUISimulationActivities implements ActionListener {
             foodsFound.add(foodFound);
             INFO.addFood(foodFound);
         }
-        String screenText = "You found " + amtFound + " items during your scavenge:\nOrder in: # - name - energy refuel - price\n";
-        for (int i = 0; i != amtFound; i++) {
-            Food food = foodsFound.get(i);
-            screenText += (i + 1) + " - " + food.getName() + " - " + food.getEnergy() + " - $" + food.getPrice() + "\n";
+        String screenText = "You found " + amtFound + " items during your scavenge:\n\n" +
+                "#  name                      energy   price\n";
+        for (int i = 0; i != INFO.getTRASH_PILE().length; i++) {
+            Food food = INFO.getTRASH_PILE()[i];
+            screenText += (i + 1) + "  " + food.getName() + food.getEnergy() + "           $" + food.getPrice() + "\n";
         }
         INFO_SCREEN.setText(screenText);
         continueOption();
@@ -212,7 +220,8 @@ public class GUISimulationActivities implements ActionListener {
         int appealGain = (int) (Math.random() * 2) + 1;
         INFO.changeAppeal(appealGain);
         String screenText = "You take a shower in the park's public restroom...\nYou gained ";
-        if (appealGain == 1) { screenText += "an appeal point."; }
+        if (appealGain == 0) { screenText += " no appeal points..."; }
+        else if (appealGain == 1) { screenText += " an appeal point."; }
         else { screenText += appealGain + " appeal points!"; }
         INFO_SCREEN.setText(screenText);
         continueOption();
@@ -220,10 +229,10 @@ public class GUISimulationActivities implements ActionListener {
 
     public void shop() {
         actionsPanel.setVisible(false);
-        String screenText = "Shop:\n# - name - energy refuel - price\n";
+        String screenText = "Shop:\n#  name                      energy   price\n";
         for (int i = 0; i != INFO.getFOOD_SHOP().length; i++) {
             Food food = INFO.getFOOD_SHOP()[i];
-            screenText += (i + 1) + " - " + food.getName() + " - " + food.getEnergy() + " - $" + food.getPrice() + "\n";
+            screenText += (i + 1) + "  " + food.getName() + food.getEnergy() + "           $" + food.getPrice() + "\n";
         }
         screenText += "\nWhich do you want to buy? You have $" + INFO.getMoney();
         INFO_SCREEN.setText(screenText);
@@ -269,10 +278,11 @@ public class GUISimulationActivities implements ActionListener {
     public void nap() {
         INFO.decreaseActionCount();
         actionsPanel.setVisible(false);
-        int energyGain = (int) (Math.random() * 3) + 1;
+        int energyGain = (int) (Math.random() * 4);
         INFO.changeEnergy(energyGain);
-        String screenText = "You take a nap...\nYou gained ";
-        if (energyGain == 1) { screenText += "an energy point."; }
+        String screenText = "You go take a nap...\n\nYou gained ";
+        if (energyGain == 0) { screenText += "no energy points..."; }
+        else if (energyGain == 1) { screenText += "an energy point."; }
         else { screenText += energyGain + " energy points!"; }
         int moneyStolenWhole = (int) (Math.random() * (INFO.getMoney() + 1));
         for (int i = 3; i < INFO.getAppeal(); i++) {
@@ -286,7 +296,8 @@ public class GUISimulationActivities implements ActionListener {
         dF.setRoundingMode(RoundingMode.DOWN);
         String moneyStolenString = dF.format(moneyStolenWhole / 100.0);
         double moneyStolen = Double.parseDouble(moneyStolenString);
-        screenText += "\nBut while you were sleeping, you were robbed $" + moneyStolen + "!";
+        if (moneyStolen == 0) { screenText +=  "\nLuckily you weren't robbed this time! "}
+        else { screenText += "\nAlso, while you were sleeping, you were robbed $" + moneyStolen + "!"; }
         INFO.changeMoney(-moneyStolen);
         INFO_SCREEN.setText(screenText);
         napCount++;
@@ -295,10 +306,10 @@ public class GUISimulationActivities implements ActionListener {
 
     public void eat() {
         actionsPanel.setVisible(false);
-        String screenText = "Inventory:\n# - name - energy refuel\n";
+        String screenText = "Inventory:\n#  name                      energy   price\n";
         for (int i = 0; i != INFO.getFoods().size(); i++) {
             Food food = INFO.getFoods().get(i);
-            screenText += (i + 1) + " - " + food.getName() + " - " + food.getEnergy() + " - $" + food.getPrice() + "\n";
+            screenText += (i + 1) + " - " + food.getName() + " - " + food.getEnergy() + "           $" + food.getPrice() + "\n";
         }
         screenText += "\nWhich do you want to eat? You have " + INFO.getEnergy() + " energy.";
         INFO_SCREEN.setText(screenText);
@@ -342,7 +353,7 @@ public class GUISimulationActivities implements ActionListener {
             Food food = INFO.getFoods().get(i);
             screenText += (i + 1) + " - " + food.getName() + " - " + food.getEnergy() + " - $" + food.getPrice() + "\n";
         }
-        screenText += "\nWhich do you want to feed to your cat? The cat has " + INFO.getCatEnergy() + " energy.";
+        screenText += "\nWhich do you want to feed to your cat?\nThe cat has " + INFO.getCatEnergy() + " energy.";
         INFO_SCREEN.setText(screenText);
         JLabel choiceBox = new JLabel("Choice #: ");
         JTextField choiceField = new JTextField(3);
@@ -409,11 +420,11 @@ public class GUISimulationActivities implements ActionListener {
             case "Yes" -> {
                 INFO.save();
                 savePanel.setVisible(false);
-                INFO_SCREEN.setText("Progress saved;\nCome again!");
+                INFO_SCREEN.setText("\n\n\n\n\n\nProgress saved;\nCome again!");
             }
             case "No" -> {
                 savePanel.setVisible(false);
-                INFO_SCREEN.setText("Progress not saved.\nCome again!");
+                INFO_SCREEN.setText("\n\n\n\n\n\nProgress not saved.\nCome again!");
             }
         }
     }
