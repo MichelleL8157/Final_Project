@@ -220,9 +220,9 @@ public class GUISimulationActivities implements ActionListener {
         int appealGain = (int) (Math.random() * 2) + 1;
         INFO.changeAppeal(appealGain);
         String screenText = "You take a shower in the park's public restroom...\nYou gained ";
-        if (appealGain == 0) { screenText += " no appeal points..."; }
-        else if (appealGain == 1) { screenText += " an appeal point."; }
-        else { screenText += appealGain + " appeal points!"; }
+        if (appealGain == 0) { screenText += "no appeal points..."; }
+        else if (appealGain == 1) { screenText += "an appeal point."; }
+        else { screenText += appealGain + "appeal points!"; }
         INFO_SCREEN.setText(screenText);
         continueOption();
     }
@@ -296,7 +296,7 @@ public class GUISimulationActivities implements ActionListener {
         dF.setRoundingMode(RoundingMode.DOWN);
         String moneyStolenString = dF.format(moneyStolenWhole / 100.0);
         double moneyStolen = Double.parseDouble(moneyStolenString);
-        if (moneyStolen == 0) { screenText +=  "\nLuckily you weren't robbed this time! "}
+        if (moneyStolen == 0) { screenText +=  "\nLuckily you weren't robbed this time!"; }
         else { screenText += "\nAlso, while you were sleeping, you were robbed $" + moneyStolen + "!"; }
         INFO.changeMoney(-moneyStolen);
         INFO_SCREEN.setText(screenText);
@@ -309,7 +309,7 @@ public class GUISimulationActivities implements ActionListener {
         String screenText = "Inventory:\n#  name                      energy   price\n";
         for (int i = 0; i != INFO.getFoods().size(); i++) {
             Food food = INFO.getFoods().get(i);
-            screenText += (i + 1) + " - " + food.getName() + " - " + food.getEnergy() + "           $" + food.getPrice() + "\n";
+            screenText += (i + 1) + "  " + food.getName() + food.getEnergy() + "           $" + food.getPrice() + "\n";
         }
         screenText += "\nWhich do you want to eat? You have " + INFO.getEnergy() + " energy.";
         INFO_SCREEN.setText(screenText);
@@ -341,6 +341,10 @@ public class GUISimulationActivities implements ActionListener {
             Food food = INFO.getFoods().get(foodChoice - 1);
             INFO.changeEnergy(food.getEnergy());
             INFO.removeFood(foodChoice - 1);
+            String screenName = "";
+            for (int i = food.getName().length() - 1; i != -1) {
+                String screenNameTest = 
+            }
             INFO_SCREEN.setText("You used a " + food.getName().toLowerCase() + " and gained " + food.getEnergy() + " energy!");
             continueOption();
         }
