@@ -65,11 +65,26 @@ public class GenerateProfile {
             info.setDaysPassed(Integer.parseInt(dataArr[4]));
             info.setActionCount(Integer.parseInt(dataArr[5]));
             ArrayList<Food> foods = new ArrayList<Food>();
-            while (s.hasNextLine()) {
-                String values = s.nextLine();
-                String[] valuesArr = values.split(";\\s*");
-                Food food = new Food(valuesArr[0], Double.parseDouble(valuesArr[1]), Integer.parseInt(valuesArr[2]));
-                foods.add(food);
+            if (s.hasNextLine()) {
+                FileInputStream foodList = new FileInputStream("src/ProgressSave/" + userName + ".data");
+                ObjectInputStream foodListStream = new ObjectInputStream(foodList);
+                Object foodTest;
+                while (true) {
+                    try {
+                        foodTest = foodListStream.readObject();
+                        if (foodTest instanceof Food) {
+                            foods.add((Food) foodTest);
+                        } else {
+                            System.out.println("Loading Food from food list error.");
+                        }
+                    } catch (EOFException ex) {
+                        break;
+                    } catch (ClassNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                }
+                foodList.close();
+                foodListStream.close();
             }
             info.setFoods(foods);
             s.close();

@@ -1,12 +1,8 @@
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 
-public class Inventory {
+public class Inventory extends Food implements Serializable {
     private final String USER_NAME;
-    private final Food[] FOOD_SHOP;
-    private final Food[] TRASH_PILE;
     private ArrayList<Food> foods;
     private double money;
     private int appeal;
@@ -16,17 +12,7 @@ public class Inventory {
     private int actionCount;
 
     public Inventory(String userName) {
-        Food[] foodShop = {new Food("Water                      ", 0.35, 2),
-                new Food("Bread                      ",0.4, 3), new Food("Bread Crust            ", 0.15, 1),
-                new Food("Soda                       ", 0.45, 3), new Food("Candy                     ", 0.5, 3),
-                new Food("Potato                     ", 0.2, 1), new Food("Apple                      ", 0.7, 5),
-                new Food("Chocolate               ", 0.6, 4), new Food("Chips                      ", 0.25, 1),
-                new Food("Cigarettes             ", 1, 7)};
-        Food[] trashPile = {new Food("Yogurt                     ", 0.1, 1), new Food("Chicken Bones       ", 0.15, 1),
-                new Food("Old Apple                ", 0.2, 2), new Food("Half-Bottled Water  ", 0.15, 1),
-                new Food("Stale Chips             ", 0.2, 1)};
-        FOOD_SHOP = foodShop;
-        TRASH_PILE = trashPile;
+        super();
         this.USER_NAME = userName;
         foods = new ArrayList<Food>();
         money = 0.0;
@@ -38,8 +24,6 @@ public class Inventory {
     }
 
     public ArrayList<Food> getFoods() { return foods; }
-    public Food[] getFOOD_SHOP() { return FOOD_SHOP; }
-    public Food[] getTRASH_PILE() { return TRASH_PILE; }
     public String getUserName() { return USER_NAME; }
     public double getMoney() { return money; }
     public int getAppeal() { return appeal; }
@@ -92,10 +76,14 @@ public class Inventory {
             fileWriter.write(getEnergy() + "; ");
             fileWriter.write(getCatEnergy() + "; ");
             fileWriter.write(getDaysPassed() + "; ");
-            fileWriter.write(getActionCount() + "");
-            for (Food food: getFoods()) {
-                fileWriter.write("\n" + food.getName() + "; " + food.getPrice() + food.getEnergy());
+            fileWriter.write(getActionCount() + "\n");
+            FileOutputStream saveFoods = new FileOutputStream("src/ProgressSave/" + USER_NAME + ".data");
+            ObjectOutputStream saveFoodsOut = new ObjectOutputStream(saveFoods);
+            for (Food food: foods) {
+                saveFoodsOut.writeObject(food);
             }
+            saveFoods.close();
+            saveFoodsOut.close();
             fileWriter.close();
         }
         catch (IOException e) {

@@ -46,7 +46,7 @@ public class GUISimulationActivities implements ActionListener {
         INFO_SCREEN.setFont(new Font("Tempus Sans", Font.PLAIN, 25));
         INFO_SCREEN.setWrapStyleWord(true);
         INFO_SCREEN.setLineWrap(true);
-        ImageIcon image = new ImageIcon("src/Images/test.png");
+        ImageIcon image = new ImageIcon("src/Images/loadScreenTest.png");
         Image imageData = image.getImage();
         Image scaledImage = imageData.getScaledInstance(500, 500, java.awt.Image.SCALE_SMOOTH);
         image = new ImageIcon(scaledImage);
@@ -55,27 +55,35 @@ public class GUISimulationActivities implements ActionListener {
         inventoryPanel.add(defaultPicture);
 
         JPanel actionsPanel = new JPanel();
-        JButton begButton = new JButton("Beg");
-        JButton scavengeButton = new JButton("Scavenge");
-        JButton showerButton = new JButton("Shower");
-        JButton shopButton = new JButton("Shop");
-        JButton napButton = new JButton("Nap");
-        JButton eatButton = new JButton("Eat");
-        JButton feedCatButton = new JButton("Feed Cat");
-        JButton saveButton = new JButton("Save");
+        GUIButton begButton = new GUIButton();
+        begButton.setText("Beg");
+        GUIButton scavengeButton = new GUIButton();
+        scavengeButton.setText("Scavenge");
+        GUIButton showerButton = new GUIButton();
+        showerButton.setText("Shower");
+        GUIButton napButton = new GUIButton();
+        napButton.setText("Nap");
+        GUIButton shopButton = new GUIButton();
+        shopButton.setText("Shop");
+        GUIButton eatButton = new GUIButton();
+        eatButton.setText("Eat");
+        GUIButton feedCatButton = new GUIButton();
+        feedCatButton.setText("Feed Cat");
+        GUIButton saveButton = new GUIButton();
+        saveButton.setText("Save");
         begButton.addActionListener(this);
         scavengeButton.addActionListener(this);
         showerButton.addActionListener(this);
-        shopButton.addActionListener(this);
         napButton.addActionListener(this);
+        shopButton.addActionListener(this);
         eatButton.addActionListener(this);
         feedCatButton.addActionListener(this);
         saveButton.addActionListener(this);
         actionsPanel.add(begButton);
         actionsPanel.add(scavengeButton);
         actionsPanel.add(showerButton);
-        actionsPanel.add(shopButton);
         actionsPanel.add(napButton);
+        actionsPanel.add(shopButton);
         actionsPanel.add(eatButton);
         actionsPanel.add(feedCatButton);
         actionsPanel.add(saveButton);
@@ -104,9 +112,17 @@ public class GUISimulationActivities implements ActionListener {
     private void loadInfoScreen() {
         daysPassed.setText("Days Passed: " + INFO.getDaysPassed());
         actionsPanel.setVisible(true);
-        DecimalFormat dF = new DecimalFormat("#.##");
-        dF.setRoundingMode(RoundingMode.DOWN);
-        double money = Double.parseDouble(INFO.getMoney() + "");
+        String moneyString = (INFO.getMoney() * 100) + "";
+        moneyString = moneyString.substring(0, moneyString.indexOf("."));
+        if (moneyString.length() == 1) { moneyString = "0.0" + moneyString; }
+        else if (moneyString.length() == 2) { moneyString = "0." + moneyString; }
+        else {
+            String cents = moneyString.substring(moneyString.length() - 2);
+            String dollars = moneyString.substring(0, moneyString.length() - 2);
+            moneyString = dollars + "." + cents;
+        }
+        Double money = Double.parseDouble(moneyString);
+        INFO.setMoney(money);
         String status = "\n\n\nMoney:         $" + money + "\n";
         status += "Appeal:          " + INFO.getAppeal() + "\n";
         status += "Energy:          " + INFO.getEnergy() + "\nCat Energy:   ";
@@ -116,7 +132,7 @@ public class GUISimulationActivities implements ActionListener {
             status += INFO.getCatEnergy();
         }
         status += "\nActions Left:  " + INFO.getActionCount();
-        status += "\n\nWhat do you want to do?\nChoose an action.";
+        status += "\n\nWhat do you want to do?";
         INFO_SCREEN.setText(status);
     }
 
@@ -183,14 +199,11 @@ public class GUISimulationActivities implements ActionListener {
         String earningsString = dF.format(earningsWhole / 100.0);
         double earnings = Double.parseDouble(earningsString);
         INFO.changeMoney(earnings);
-        String activity = "";
-        if ((int) (Math.random() * 2) == 0) { activity = "shaking your cup"; }
-        else { activity = "holding up a cardboard paper"; }
-        INFO_SCREEN.setText("You wait for a few hours " + activity + "...\nYou earned $" + earningsString + "!");
+        INFO_SCREEN.setText("You wait for a few hours holding up a cardboard paper...\nYou earned $" + earningsString + "!");
         continueOption();
     }
 
-    public void scavenge() {
+    public void scavenge() { //test mode
         INFO.decreaseActionCount();
         INFO.changeEnergy(-3);
         INFO.changeAppeal(-2);
@@ -222,7 +235,7 @@ public class GUISimulationActivities implements ActionListener {
         String screenText = "You take a shower in the park's public restroom...\nYou gained ";
         if (appealGain == 0) { screenText += "no appeal points..."; }
         else if (appealGain == 1) { screenText += "an appeal point."; }
-        else { screenText += appealGain + "appeal points!"; }
+        else { screenText += appealGain + " appeal points!"; }
         INFO_SCREEN.setText(screenText);
         continueOption();
     }
@@ -259,9 +272,14 @@ public class GUISimulationActivities implements ActionListener {
         int foodChoice = Integer.parseInt(foodChoiceString);
         if (foodChoice < 0 || foodChoice > INFO.getFOOD_SHOP().length) {
             INFO_SCREEN.setText("That's not an option.");
-            continueOption();
         } else {
             Food food = INFO.getFOOD_SHOP()[foodChoice - 1];
+            String foodNameLong = food.getName();
+            int index = foodNameLong.length() - 1;
+            while (foodNameLong.substring(index).indexOf(" ") == 0) {
+                index--;
+            }
+            String foodName = foodNameLong.substring(0, index + 1);
             String screenText = "";
             if (INFO.getMoney() < food.getPrice()) {
                 screenText += "Purchase Denied:\nYou are short $" + (food.getPrice() - INFO.getMoney());
@@ -270,9 +288,10 @@ public class GUISimulationActivities implements ActionListener {
                 INFO.addFood(food);
                 INFO.changeMoney(-food.getPrice());
             }
-            INFO_SCREEN.setText(screenText + " for a " + food.getName().toLowerCase() + "." );
-            continueOption();
+            INFO_SCREEN.setText(screenText + " for a " + foodName.toLowerCase() + "." );
+
         }
+        continueOption();
     }
 
     public void nap() {
@@ -341,21 +360,23 @@ public class GUISimulationActivities implements ActionListener {
             Food food = INFO.getFoods().get(foodChoice - 1);
             INFO.changeEnergy(food.getEnergy());
             INFO.removeFood(foodChoice - 1);
-            String screenName = "";
-            for (int i = food.getName().length() - 1; i != -1) {
-                String screenNameTest = 
+            String foodNameLong = food.getName();
+            int index = foodNameLong.length() - 1;
+            while (foodNameLong.substring(index).indexOf(" ") == 0) {
+                index--;
             }
-            INFO_SCREEN.setText("You used a " + food.getName().toLowerCase() + " and gained " + food.getEnergy() + " energy!");
+            String foodName = foodNameLong.substring(0, index + 1);
+            INFO_SCREEN.setText("You used a " + foodName.toLowerCase() + " and gained " + food.getEnergy() + " energy!");
             continueOption();
         }
     }
 
     public void feedCat() {
         actionsPanel.setVisible(false);
-        String screenText = "Inventory:\n# - name - energy refuel\n";
+        String screenText = "Inventory:\n#  name                      energy   price\n";
         for (int i = 0; i != INFO.getFoods().size(); i++) {
             Food food = INFO.getFoods().get(i);
-            screenText += (i + 1) + " - " + food.getName() + " - " + food.getEnergy() + " - $" + food.getPrice() + "\n";
+            screenText += (i + 1) + "  " + food.getName() + food.getEnergy() + "           $" + food.getPrice() + "\n";
         }
         screenText += "\nWhich do you want to feed to your cat?\nThe cat has " + INFO.getCatEnergy() + " energy.";
         INFO_SCREEN.setText(screenText);
@@ -387,7 +408,13 @@ public class GUISimulationActivities implements ActionListener {
             Food food = INFO.getFoods().get(foodChoice - 1);
             INFO.changeCatEnergy(food.getEnergy());
             INFO.removeFood(foodChoice - 1);
-            String screenText = "You used a " + food.getName().toLowerCase() + " to feed the cat. The cat gained " + food.getEnergy() + " energy!";
+            String foodNameLong = food.getName();
+            int index = foodNameLong.length() - 1;
+            while (foodNameLong.substring(index).indexOf(" ") == 0) {
+                index--;
+            }
+            String foodName = foodNameLong.substring(0, index + 1);
+            String screenText = "You used a " + foodName.toLowerCase() + " to feed the cat.\nThe cat gained " + food.getEnergy() + " energy!";
             INFO_SCREEN.setText(screenText);
             continueOption();
         }
