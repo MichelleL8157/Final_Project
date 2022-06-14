@@ -13,6 +13,7 @@ public class GUIButton extends JButton {
 
     public GUIButton() {
         setColor(Color.WHITE);
+        setPreferredSize(new Dimension(130, 40));
         colorOver = new Color(242, 215, 213);
         colorClick = new Color(230, 176, 170);
         borderColor = new Color(217, 136, 128);

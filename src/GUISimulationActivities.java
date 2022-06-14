@@ -140,9 +140,8 @@ public class GUISimulationActivities implements ActionListener {
         }
         Double money = Double.parseDouble(moneyString);
         INFO.setMoney(money);
-        String status = "\n\n\nMoney:         $" + money + "\n";
-        status += "Appeal:          " + INFO.getAppeal() + "\n";
-        status += "Energy:          " + INFO.getEnergy() + "\nCat Energy:   ";
+        String status = "\n\n\nMoney:         $" + money + "\nAppeal:          " + INFO.getAppeal() +
+                "\nEnergy:          " + INFO.getEnergy() + "\nCat Energy:   ";
         if (INFO.getCatEnergy() == -1) {
             status +=  "X";
         } else {
@@ -308,6 +307,7 @@ public class GUISimulationActivities implements ActionListener {
         JLabel choiceBox = new JLabel("Choice #: ");
         JPanel foodBuyPanel = new JPanel();
         JTextField choiceField = new JTextField(3);
+        choiceField.setPreferredSize(new Dimension(130, 40));
         this.choiceField = choiceField;
         GUIButton buyButton = new GUIButton();
         buyButton.setText("Buy");
@@ -408,6 +408,7 @@ public class GUISimulationActivities implements ActionListener {
         INFO_SCREEN.setText(screenText);
         JLabel choiceBox = new JLabel("Choice #: ");
         JTextField choiceField = new JTextField(3);
+        choiceField.setPreferredSize(new Dimension(130, 40));
         this.choiceField = choiceField;
         GUIButton useButton = new GUIButton();
         useButton.setText("Use");
@@ -466,6 +467,7 @@ public class GUISimulationActivities implements ActionListener {
         INFO_SCREEN.setText(screenText);
         JLabel choiceBox = new JLabel("Choice #: ");
         JTextField choiceField = new JTextField(3);
+        choiceField.setPreferredSize(new Dimension(130, 40));
         this.choiceField = choiceField;
         GUIButton feedButton = new GUIButton();
         feedButton.setText("Feed");
