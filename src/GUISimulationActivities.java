@@ -1,7 +1,10 @@
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -10,7 +13,12 @@ public class GUISimulationActivities implements ActionListener {
     private final JTextArea INFO_SCREEN;
     private final Inventory INFO;
     private JFrame frame;
-    private JLabel defaultPicture;
+    private JLabel defaultImage;
+    private JLabel begImage;
+    private JLabel eatOrFeedImage;
+    private JLabel scavengeImage;
+    private JLabel showerImage;
+    private JLabel napImage;
     private JLabel daysPassed;
     private JPanel actionsPanel;
     private JPanel continuePanel;
@@ -20,8 +28,9 @@ public class GUISimulationActivities implements ActionListener {
     private JPanel foodGivePanel;
     private JTextField choiceField;
     private int napCount;
+    private JPanel inventoryPanel;
 
-    public GUISimulationActivities(Inventory info) {
+    public GUISimulationActivities(Inventory info) throws IOException {
         INFO_SCREEN = new JTextArea(15, 25);
         choiceField = new JTextField();
         this.INFO = info;
@@ -30,7 +39,7 @@ public class GUISimulationActivities implements ActionListener {
         loadInfoScreen();
     }
 
-    public void setupGUI() {
+    public void setupGUI() throws IOException {
         JFrame frame = new JFrame("Homeless Simulation");
         this.frame = frame;
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -42,17 +51,19 @@ public class GUISimulationActivities implements ActionListener {
         this.daysPassed = daysPassed;
 
         JPanel inventoryPanel = new JPanel();
-        INFO_SCREEN.setText("Not working if this shows.");
         INFO_SCREEN.setFont(new Font("Tempus Sans", Font.PLAIN, 25));
         INFO_SCREEN.setWrapStyleWord(true);
         INFO_SCREEN.setLineWrap(true);
-        ImageIcon image = new ImageIcon("src/Images/loadScreenTest.png");
-        Image imageData = image.getImage();
-        Image scaledImage = imageData.getScaledInstance(500, 500, java.awt.Image.SCALE_SMOOTH);
-        image = new ImageIcon(scaledImage);
-        this.defaultPicture = new JLabel(image);
+        INFO_SCREEN.setBackground(new Color(242, 215, 213));
         inventoryPanel.add(INFO_SCREEN);
-        inventoryPanel.add(defaultPicture);
+
+        ImageIcon infoIcon = new ImageIcon("src/Images/infoScreen.png");
+        Image infoData = infoIcon.getImage();
+        Image scaledInfoImage = infoData.getScaledInstance(500, 500, java.awt.Image.SCALE_SMOOTH);
+        infoIcon = new ImageIcon(scaledInfoImage);
+        defaultImage = new JLabel(infoIcon);
+        inventoryPanel.add(defaultImage);
+        this.inventoryPanel = inventoryPanel;
 
         JPanel actionsPanel = new JPanel();
         GUIButton begButton = new GUIButton();
@@ -95,13 +106,19 @@ public class GUISimulationActivities implements ActionListener {
         foodBuyPanel = new JPanel();
         foodUsePanel = new JPanel();
         foodGivePanel = new JPanel();
+        begImage = new JLabel();
+        eatOrFeedImage = new JLabel();
+        scavengeImage = new JLabel();
+        showerImage = new JLabel();
+        napImage = new JLabel();
         frame.pack();
         frame.setVisible(true);
     }
 
     public void continueOption() {
         JPanel continuePanel = new JPanel();
-        JButton continueButton = new JButton("Continue");
+        GUIButton continueButton = new GUIButton();
+        continueButton.setText("Continue");
         continuePanel.add(continueButton);
         continueButton.addActionListener(this);
         frame.add(continuePanel, BorderLayout.SOUTH);
@@ -110,8 +127,8 @@ public class GUISimulationActivities implements ActionListener {
     }
 
     private void loadInfoScreen() {
-        daysPassed.setText("Days Passed: " + INFO.getDaysPassed());
         actionsPanel.setVisible(true);
+        daysPassed.setText("Days Passed: " + INFO.getDaysPassed());
         String moneyString = (INFO.getMoney() * 100) + "";
         moneyString = moneyString.substring(0, moneyString.indexOf("."));
         if (moneyString.length() == 1) { moneyString = "0.0" + moneyString; }
@@ -138,12 +155,19 @@ public class GUISimulationActivities implements ActionListener {
 
     public void save() {
         actionsPanel.setVisible(false);
-        String ending = "";
-        if (napCount >= 2) { ending +=  "You basically napped the whole day and find yourself sleeping, never waking up again.\n"; }
-            if ((INFO.getActionCount() == 0 && INFO.getEnergy() < 0)) {
-            ending += "It's the end of the day, but you don't have any energy left...\n\nCongrats on surviving for " + INFO.getDaysPassed() + " days!\n";
+        boolean gameOver = false;
+        String ending = "\n\n\n\n";
+        if (napCount >= 2) {
+            gameOver = true;
+            ending += "You basically napped the whole day and find yourself sleeping, never waking up again...";
         }
-        ending += "\n\n\n\n\n\nDo you want to save your data?";
+        if (INFO.getActionCount() == 0 && INFO.getEnergy() <= 0) {
+            gameOver = true;
+            ending += "It's the end of the day, but you don't have enough energy to wake up the next day...";
+        }
+        if (gameOver) ending += "\n\nGame Over! You ended the day with " + INFO.getEnergy() + " energy.";
+        else ending+= "\n";
+        ending += "\nDo you want to save your data?";
         INFO_SCREEN.setText(ending);
         JPanel savePanel = new JPanel();
         JButton yesButton = new JButton("Yes");
@@ -158,6 +182,12 @@ public class GUISimulationActivities implements ActionListener {
     }
 
     public void transition() {
+        defaultImage.setVisible(true);
+        begImage.setVisible(false);
+        eatOrFeedImage.setVisible(false);
+        scavengeImage.setVisible(false);
+        showerImage.setVisible(false);
+        napImage.setVisible(false);
         continuePanel.setVisible(false);
         INFO_SCREEN.setText("");
         if (INFO.getActionCount() == 0 && INFO.getEnergy() <= 0) { //game over
@@ -185,6 +215,14 @@ public class GUISimulationActivities implements ActionListener {
     }
 
     public void beg() {
+        ImageIcon begIcon = new ImageIcon("src/Images/beg.png");
+        Image begData = begIcon.getImage();
+        Image scaledBegImage = begData.getScaledInstance(500, 500, java.awt.Image.SCALE_SMOOTH);
+        begIcon = new ImageIcon(scaledBegImage);
+        begImage = new JLabel(begIcon);
+        begImage.setVisible(true);
+        inventoryPanel.add(begImage);
+        defaultImage.setVisible(false);
         INFO.decreaseActionCount();
         INFO.changeEnergy(-2);
         INFO.changeAppeal(-1);
@@ -199,11 +237,19 @@ public class GUISimulationActivities implements ActionListener {
         String earningsString = dF.format(earningsWhole / 100.0);
         double earnings = Double.parseDouble(earningsString);
         INFO.changeMoney(earnings);
-        INFO_SCREEN.setText("You wait for a few hours holding up a cardboard paper...\nYou earned $" + earningsString + "!");
+        INFO_SCREEN.setText("\n\n\n\n\nYou wait for a few hours holding up a cardboard paper...\nYou earned $" + earningsString + "!");
         continueOption();
     }
 
-    public void scavenge() { //test mode
+    public void scavenge() {
+        ImageIcon scavengeIcon = new ImageIcon("src/Images/scavenge.png");
+        Image scavengeData = scavengeIcon.getImage();
+        Image scaledScavengeIcon = scavengeData.getScaledInstance(500, 500, java.awt.Image.SCALE_SMOOTH);
+        scavengeIcon = new ImageIcon(scaledScavengeIcon);
+        scavengeImage = new JLabel(scavengeIcon);
+        scavengeImage.setVisible(true);
+        inventoryPanel.add(scavengeImage);
+        defaultImage.setVisible(false);
         INFO.decreaseActionCount();
         INFO.changeEnergy(-3);
         INFO.changeAppeal(-2);
@@ -216,10 +262,12 @@ public class GUISimulationActivities implements ActionListener {
             foodsFound.add(foodFound);
             INFO.addFood(foodFound);
         }
-        String screenText = "You found " + amtFound + " items during your scavenge:\n\n" +
-                "#  name                      energy   price\n";
-        for (int i = 0; i != INFO.getTRASH_PILE().length; i++) {
-            Food food = INFO.getTRASH_PILE()[i];
+        String screenText = "\n\n\n\nYou found " + amtFound;
+        if (amtFound == 1) screenText += " item.";
+        else screenText += " items during your scavenge.";
+        screenText += "\n\n#  name                      energy   price\n";
+        for (int i = 0; i != foodsFound.size(); i++) {
+            Food food = foodsFound.get(i);
             screenText += (i + 1) + "  " + food.getName() + food.getEnergy() + "           $" + food.getPrice() + "\n";
         }
         INFO_SCREEN.setText(screenText);
@@ -227,12 +275,20 @@ public class GUISimulationActivities implements ActionListener {
     }
 
     public void shower() {
+        ImageIcon showerIcon = new ImageIcon("src/Images/shower.png");
+        Image showerData = showerIcon.getImage();
+        Image scaledShowerIcon = showerData.getScaledInstance(500, 500, java.awt.Image.SCALE_SMOOTH);
+        showerIcon = new ImageIcon(scaledShowerIcon);
+        showerImage = new JLabel(showerIcon);
+        showerImage.setVisible(true);
+        inventoryPanel.add(showerImage);
+        defaultImage.setVisible(false);
         INFO.decreaseActionCount();
         INFO.changeEnergy(-3);
         actionsPanel.setVisible(false);
         int appealGain = (int) (Math.random() * 2) + 1;
         INFO.changeAppeal(appealGain);
-        String screenText = "You take a shower in the park's public restroom...\nYou gained ";
+        String screenText = "\n\n\n\n\nYou take a shower in the park's public restroom...\nYou gained ";
         if (appealGain == 0) { screenText += "no appeal points..."; }
         else if (appealGain == 1) { screenText += "an appeal point."; }
         else { screenText += appealGain + " appeal points!"; }
@@ -253,8 +309,10 @@ public class GUISimulationActivities implements ActionListener {
         JPanel foodBuyPanel = new JPanel();
         JTextField choiceField = new JTextField(3);
         this.choiceField = choiceField;
-        JButton buyButton = new JButton("Buy");
-        JButton stopButton = new JButton("Stop");
+        GUIButton buyButton = new GUIButton();
+        buyButton.setText("Buy");
+        GUIButton stopButton = new GUIButton();
+        stopButton.setText("Stop");
         foodBuyPanel.add(choiceBox);
         foodBuyPanel.add(choiceField);
         foodBuyPanel.add(buyButton);
@@ -295,6 +353,14 @@ public class GUISimulationActivities implements ActionListener {
     }
 
     public void nap() {
+        ImageIcon napIcon = new ImageIcon("src/Images/nap.png");
+        Image napData = napIcon.getImage();
+        Image scaledNapImage = napData.getScaledInstance(500, 500, java.awt.Image.SCALE_SMOOTH);
+        napIcon = new ImageIcon(scaledNapImage);
+        napImage = new JLabel(napIcon);
+        napImage.setVisible(true);
+        inventoryPanel.add(napImage);
+        defaultImage.setVisible(false);
         INFO.decreaseActionCount();
         actionsPanel.setVisible(false);
         int energyGain = (int) (Math.random() * 4);
@@ -324,6 +390,14 @@ public class GUISimulationActivities implements ActionListener {
     }
 
     public void eat() {
+        ImageIcon eatFeedIcon = new ImageIcon("src/Images/eatOrFeed.png");
+        Image eatFeedData = eatFeedIcon.getImage();
+        Image scaledEatFeedIcon = eatFeedData.getScaledInstance(500, 500, java.awt.Image.SCALE_SMOOTH);
+        eatFeedIcon = new ImageIcon(scaledEatFeedIcon);
+        eatOrFeedImage = new JLabel(eatFeedIcon);
+        eatOrFeedImage.setVisible(true);
+        inventoryPanel.add(eatOrFeedImage);
+        defaultImage.setVisible(false);
         actionsPanel.setVisible(false);
         String screenText = "Inventory:\n#  name                      energy   price\n";
         for (int i = 0; i != INFO.getFoods().size(); i++) {
@@ -335,8 +409,10 @@ public class GUISimulationActivities implements ActionListener {
         JLabel choiceBox = new JLabel("Choice #: ");
         JTextField choiceField = new JTextField(3);
         this.choiceField = choiceField;
-        JButton useButton = new JButton("Use");
-        JButton stopButton = new JButton("Stop");
+        GUIButton useButton = new GUIButton();
+        useButton.setText("Use");
+        GUIButton stopButton = new GUIButton();
+        stopButton.setText("Stop");
         JPanel foodUsePanel = new JPanel();
         foodUsePanel.add(choiceBox);
         foodUsePanel.add(choiceField);
@@ -366,12 +442,20 @@ public class GUISimulationActivities implements ActionListener {
                 index--;
             }
             String foodName = foodNameLong.substring(0, index + 1);
-            INFO_SCREEN.setText("You used a " + foodName.toLowerCase() + " and gained " + food.getEnergy() + " energy!");
+            INFO_SCREEN.setText("\n\n\n\n\n\nYou used a " + foodName.toLowerCase() + " and gained " + food.getEnergy() + " energy!");
             continueOption();
         }
     }
 
     public void feedCat() {
+        ImageIcon eatFeedIcon = new ImageIcon("src/Images/eatOrFeed.png");
+        Image eatFeedData = eatFeedIcon.getImage();
+        Image scaledEatFeedIcon = eatFeedData.getScaledInstance(500, 500, java.awt.Image.SCALE_SMOOTH);
+        eatFeedIcon = new ImageIcon(scaledEatFeedIcon);
+        eatOrFeedImage = new JLabel(eatFeedIcon);
+        eatOrFeedImage.setVisible(true);
+        inventoryPanel.add(eatOrFeedImage);
+        defaultImage.setVisible(false);
         actionsPanel.setVisible(false);
         String screenText = "Inventory:\n#  name                      energy   price\n";
         for (int i = 0; i != INFO.getFoods().size(); i++) {
@@ -383,8 +467,10 @@ public class GUISimulationActivities implements ActionListener {
         JLabel choiceBox = new JLabel("Choice #: ");
         JTextField choiceField = new JTextField(3);
         this.choiceField = choiceField;
-        JButton feedButton = new JButton("Feed");
-        JButton stopButton = new JButton("Stop");
+        GUIButton feedButton = new GUIButton();
+        feedButton.setText("Feed");
+        GUIButton stopButton = new GUIButton();
+        stopButton.setText("Stop");
         JPanel foodGivePanel = new JPanel();
         foodGivePanel.add(choiceBox);
         foodGivePanel.add(choiceField);
@@ -446,6 +532,8 @@ public class GUISimulationActivities implements ActionListener {
                 foodBuyPanel.setVisible(false);
                 foodUsePanel.setVisible(false);
                 foodGivePanel.setVisible(false);
+                defaultImage.setVisible(true);
+                eatOrFeedImage.setVisible(false);
                 loadInfoScreen();
             }
             case "Yes" -> {

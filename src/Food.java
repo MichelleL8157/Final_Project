@@ -1,4 +1,6 @@
-public class Food {
+import java.io.Serializable;
+
+public class Food implements Serializable {
     private static final Food[] FOOD_SHOP = {new Food("Water                      ", 0.35, 2),
             new Food("Bread                      ",0.4, 3), new Food("Bread Crust            ", 0.15, 1),
             new Food("Soda                       ", 0.45, 3), new Food("Candy                     ", 0.5, 3),
@@ -12,7 +14,7 @@ public class Food {
     private double price;
     private int energy;
 
-    public Food() {}
+    public Food() { super(); }
 
     public Food(String name, double price, int energy) {
         this.name = name;

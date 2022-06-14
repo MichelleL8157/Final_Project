@@ -68,16 +68,18 @@ public class Inventory extends Food implements Serializable {
 
     public void save() {
         try {
-            File f = new File("src/ProgressSave/" + USER_NAME + ".data");
-            f.createNewFile();
+            File file = new File("src/ProgressSave/" + USER_NAME + ".data");
+            file.createNewFile();
             FileWriter fileWriter = new FileWriter("src/ProgressSave/" + USER_NAME + ".data");
             fileWriter.write(getMoney() + "; ");
             fileWriter.write(getAppeal() + "; ");
             fileWriter.write(getEnergy() + "; ");
             fileWriter.write(getCatEnergy() + "; ");
             fileWriter.write(getDaysPassed() + "; ");
-            fileWriter.write(getActionCount() + "\n");
-            FileOutputStream saveFoods = new FileOutputStream("src/ProgressSave/" + USER_NAME + ".data");
+            fileWriter.write(getActionCount() + "");
+            File fileFood = new File("src/ProgressSave/" + USER_NAME + "Food.data");
+            fileFood.createNewFile();
+            FileOutputStream saveFoods = new FileOutputStream("src/ProgressSave/" + USER_NAME + "Food.data");
             ObjectOutputStream saveFoodsOut = new ObjectOutputStream(saveFoods);
             for (Food food: foods) {
                 saveFoodsOut.writeObject(food);

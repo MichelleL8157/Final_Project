@@ -53,10 +53,11 @@ public class GenerateProfile {
 
     public void generateProg(String userName) throws IOException {
         try {
-            File f = new File("src/ProgressSave/" + userName + ".data");
-            Scanner s = new Scanner(f);
+            File file = new File("src/ProgressSave/" + userName + ".data");
+            FileReader fileRead = new FileReader(file);
+            BufferedReader buffer = new BufferedReader(fileRead);
             Inventory info = new Inventory(userName);
-            String data = s.nextLine();
+            String data = buffer.readLine();
             String[] dataArr = data.split(";\\s*");
             info.setMoney(Double.parseDouble(dataArr[0]));
             info.setAppeal(Integer.parseInt(dataArr[1]));
@@ -65,29 +66,26 @@ public class GenerateProfile {
             info.setDaysPassed(Integer.parseInt(dataArr[4]));
             info.setActionCount(Integer.parseInt(dataArr[5]));
             ArrayList<Food> foods = new ArrayList<Food>();
-            if (s.hasNextLine()) {
-                FileInputStream foodList = new FileInputStream("src/ProgressSave/" + userName + ".data");
-                ObjectInputStream foodListStream = new ObjectInputStream(foodList);
-                Object foodTest;
-                while (true) {
-                    try {
-                        foodTest = foodListStream.readObject();
-                        if (foodTest instanceof Food) {
-                            foods.add((Food) foodTest);
-                        } else {
-                            System.out.println("Loading Food from food list error.");
-                        }
-                    } catch (EOFException ex) {
-                        break;
-                    } catch (ClassNotFoundException e) {
-                        e.printStackTrace();
+            FileInputStream foodList = new FileInputStream("src/ProgressSave/" + userName + "FOod.data");
+            ObjectInputStream foodListStream = new ObjectInputStream(foodList);
+            Object foodTest;
+            while (true) {
+                try {
+                    foodTest = foodListStream.readObject();
+                    if (foodTest instanceof Food) {
+                        foods.add((Food) foodTest);
+                    } else {
+                        System.out.println("Loading Food from food list error.");
                     }
+                } catch (EOFException ex) {
+                    break;
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
                 }
-                foodList.close();
-                foodListStream.close();
             }
+            foodList.close();
+            foodListStream.close();
             info.setFoods(foods);
-            s.close();
             GUISimulationActivities gui = new GUISimulationActivities(info);
         }
         catch (FileNotFoundException e) {
