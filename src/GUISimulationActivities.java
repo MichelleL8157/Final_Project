@@ -1,10 +1,7 @@
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.IOException;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -30,16 +27,16 @@ public class GUISimulationActivities implements ActionListener {
     private int napCount;
     private JPanel inventoryPanel;
 
-    public GUISimulationActivities(Inventory info) throws IOException {
+    public GUISimulationActivities(Inventory info) {
         INFO_SCREEN = new JTextArea(15, 25);
         choiceField = new JTextField();
         this.INFO = info;
-        setupGUI();
+        setUpUI();
         napCount = 0;
         loadInfoScreen();
     }
 
-    public void setupGUI() throws IOException {
+    public void setUpUI() {
         JFrame frame = new JFrame("Homeless Simulation");
         this.frame = frame;
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -198,19 +195,18 @@ public class GUISimulationActivities implements ActionListener {
                 INFO.addDaysPassed();
                 INFO.setActionCount(3);
                 INFO.changeCatEnergy(-1);
+                String text = "\n\n\n\n\n\n";
                 if (INFO.getCatEnergy() == 0) {
                     INFO.changeCatEnergy(-1);
-                    String badMews = "It's the end of the day, and your cat doesn't have any energy left...\nBut you must go on.";
+                    String badMews = text + "It's the end of the day, and your cat doesn't have any energy left...\nBut you must go on.";
                     INFO_SCREEN.setText(badMews);
                     continueOption();
                 } else {
-                    INFO_SCREEN.setText("You finished 1 whole day. Congrats!");
+                    INFO_SCREEN.setText(text + "You finished 1 whole day. Congrats!");
                     continueOption();
                 }
             }
-        } else {
-            loadInfoScreen();
-        }
+        } else loadInfoScreen();
     }
 
     public void beg() {
@@ -338,7 +334,7 @@ public class GUISimulationActivities implements ActionListener {
                 index--;
             }
             String foodName = foodNameLong.substring(0, index + 1);
-            String screenText = "";
+            String screenText = "\n\n\n\n\n\n";
             if (INFO.getMoney() < food.getPrice()) {
                 screenText += "Purchase Denied:\nYou are short $" + (food.getPrice() - INFO.getMoney());
             } else {
@@ -365,7 +361,7 @@ public class GUISimulationActivities implements ActionListener {
         actionsPanel.setVisible(false);
         int energyGain = (int) (Math.random() * 4);
         INFO.changeEnergy(energyGain);
-        String screenText = "You go take a nap...\n\nYou gained ";
+        String screenText = "\n\n\n\n\nYou go take a nap...\n\nYou gained ";
         if (energyGain == 0) { screenText += "no energy points..."; }
         else if (energyGain == 1) { screenText += "an energy point."; }
         else { screenText += energyGain + " energy points!"; }
@@ -502,7 +498,7 @@ public class GUISimulationActivities implements ActionListener {
                 index--;
             }
             String foodName = foodNameLong.substring(0, index + 1);
-            String screenText = "You used a " + foodName.toLowerCase() + " to feed the cat.\nThe cat gained " + food.getEnergy() + " energy!";
+            String screenText = "\n\n\n\n\n\nYou used a " + foodName.toLowerCase() + " to feed the cat.\nThe cat gained " + food.getEnergy() + " energy!";
             INFO_SCREEN.setText(screenText);
             continueOption();
         }

@@ -12,7 +12,7 @@ public class GUIButton extends JButton {
     private int radius = 0;
 
     public GUIButton() {
-        setColor(Color.WHITE);
+        color = Color.WHITE;
         setPreferredSize(new Dimension(130, 40));
         colorOver = new Color(242, 215, 213);
         colorClick = new Color(230, 176, 170);
@@ -56,53 +56,5 @@ public class GUIButton extends JButton {
 
         g2.fillRoundRect(2, 2, getWidth() - 4, getHeight() - 4, radius, radius);
         super.paintComponent(graphics);
-    }
-
-    public boolean isOver() {
-        return over;
-    }
-
-    public void setOver(boolean over) {
-        this.over = over;
-    }
-
-    public Color getColor() {
-        return color;
-    }
-
-    public void setColor(Color color) {
-        this.color = color;
-    }
-
-    public Color getColorOver() {
-        return color;
-    }
-
-    public void setColorOver(Color colorOver) {
-        this.colorOver = colorOver;
-    }
-
-    public Color getColorClick() {
-        return colorClick;
-    }
-
-    public void setColorClick(Color colorClick) {
-        this.colorClick = colorClick;
-    }
-
-    public Color getBorderColor() {
-        return borderColor;
-    }
-
-    public void setBorderColor(Color borderColor) {
-        this.borderColor = borderColor;
-    }
-
-    public int getRadius() {
-        return radius;
-    }
-
-    public void setRadius(int radius) {
-        this.radius = radius;
     }
 }

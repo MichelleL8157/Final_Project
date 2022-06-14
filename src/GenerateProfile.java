@@ -21,7 +21,6 @@ public class GenerateProfile {
         try {
             File f = new File("src/names.data");
             Scanner s = new Scanner(f);
-            int line = 1;
             String userName = "";
             String userPass = "";
             while (s.hasNextLine()) {
@@ -89,21 +88,7 @@ public class GenerateProfile {
             GUISimulationActivities gui = new GUISimulationActivities(info);
         }
         catch (FileNotFoundException e) {
-            File f = new File("src/ProgressSave/" + userName + ".data");
-            f.createNewFile();
-            FileWriter fileWriter = new FileWriter("src/ProgressSave/" + userName + ".data");
-            Inventory info = new Inventory(userName);
-            fileWriter.write(info.getMoney() + "; ");
-            fileWriter.write(info.getAppeal() + "; ");
-            fileWriter.write(info.getEnergy() + "; ");
-            fileWriter.write(info.getCatEnergy() + "; ");
-            fileWriter.write(info.getDaysPassed() + "; ");
-            fileWriter.write(info.getActionCount() + "");
-            for (Food food: info.getFoods()) {
-                fileWriter.write("\n" + food.getName() + "; " + food.getPrice() + food.getEnergy());
-            }
-            fileWriter.close();
-            info.save();
+            System.out.println("Error in generating progress.");
         }
     }
 }

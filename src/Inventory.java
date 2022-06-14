@@ -11,7 +11,7 @@ public class Inventory extends Food implements Serializable {
     private int daysPassed;
     private int actionCount;
 
-    public Inventory(String userName) {
+    public Inventory(String userName) { //default stats
         super();
         this.USER_NAME = userName;
         foods = new ArrayList<Food>();
@@ -24,7 +24,6 @@ public class Inventory extends Food implements Serializable {
     }
 
     public ArrayList<Food> getFoods() { return foods; }
-    public String getUserName() { return USER_NAME; }
     public double getMoney() { return money; }
     public int getAppeal() { return appeal; }
     public int getEnergy() { return energy; }
@@ -54,17 +53,6 @@ public class Inventory extends Food implements Serializable {
 
     public void addFood(Food food) { foods.add(food); }
     public void removeFood(int index) { foods.remove(index); }
-
-    public String toString() {
-        String i = "Day: " + (daysPassed - 1);
-        String ii = "Money: $" + money;
-        String iii = "Appeal: " + appeal;
-        String iv = "Energy: ";
-        for (int k = 0; k != energy; k++) {
-            System.out.println();
-        }
-        return i;
-    }
 
     public void save() {
         try {
