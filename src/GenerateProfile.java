@@ -88,7 +88,21 @@ public class GenerateProfile {
             GUISimulationActivities gui = new GUISimulationActivities(info);
         }
         catch (FileNotFoundException e) {
-            System.out.println("Error in generating progress.");
+            File f = new File("src/ProgressSave/" + userName + ".data");
+            f.createNewFile();
+            FileWriter fileWriter = new FileWriter("src/ProgressSave/" + userName + ".data");
+            Inventory info = new Inventory(userName);
+            fileWriter.write(info.getMoney() + "; ");
+            fileWriter.write(info.getAppeal() + "; ");
+            fileWriter.write(info.getEnergy() + "; ");
+            fileWriter.write(info.getCatEnergy() + "; ");
+            fileWriter.write(info.getDaysPassed() + "; ");
+            fileWriter.write(info.getActionCount() + "");
+            for (Food food: info.getFoods()) {
+                fileWriter.write("\n" + food.getName() + "; " + food.getPrice() + food.getEnergy());
+            }
+            fileWriter.close();
+            info.save();
         }
     }
 }
